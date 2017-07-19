@@ -105,11 +105,20 @@ function generate3WComponent(config, data, geom) {
 
     var datatableGroup = whoDimension.group().reduce(
             function (p, v) {
+                if (v["Organization"] in p.listOrgas)
+                    p.listOrgas[v["Organization"]]++;
+                else 
+                    p.listOrgas[v["Organization"]] = 1;
+                
                 p.totalIndiv += +v["Individuals"];
                 p.totalTransfer += +v["Estimated"];
                 return p;
             },
             function (p, v) {
+                p.listOrgas[v["Organization"]]--;
+                if (p.listOrgas[v["Organization"]] == 0)
+                    delete p.listOrgas[v["Organization"]];
+                
                 p.totalIndiv -= +v["Individuals"];
                 p.totalTransfer -=+v["Estimated"];
                 if (p.totalIndiv < 0) p.totalIndiv = 0;
@@ -119,7 +128,8 @@ function generate3WComponent(config, data, geom) {
             function () {
                 return {
                     totalIndiv: 0,
-                    totalTransfer:0
+                    totalTransfer:0,
+                    listOrgas:{}
                 }
 
             }),
@@ -225,19 +235,26 @@ function generate3WComponent(config, data, geom) {
         .center([0, 0])
         .zoom(0)
         .geojson(geom)
-        .colors(['#CCCCCC', config.color])
-        .colorDomain([0, 1])
+        .colors(['#DDDDDD','#A7C1D3','#71A5CA','#3B88C0', '#056CB6'])
+        .colorDomain([0, 4])       
         .colorAccessor(function (d) {
-            if (d > 0) {
-                return 1;
-            } else {
-                return 0;
-            }
+                var c =0
+                if(d>150000){
+                    c=4;
+                } else if (d>25000) {
+                    c=3;
+                } else if (d>10000) {
+                    c=2;
+                } else if (d>0) {
+                    c=1;
+                };
+                return c
         })
         .featureKeyAccessor(function (feature) {
             return feature.properties[config.joinAttribute];
         }).popup(function (d) {
-            return lookup[d.key];
+            text = lookup[d.key] + "<br/>Total of Individuals : "+d.value;
+            return text;
         })
         .renderPopup(true);
 
