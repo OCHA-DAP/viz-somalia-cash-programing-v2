@@ -21,11 +21,18 @@
 }
 
 #header {
-    padding-bottom: 20px;
     border-bottom-color: #dddddd;
     border-bottom-style: solid;
     border-bottom-width: 1px;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
+}
+
+#header2 {
+    border-bottom-color: #dddddd;
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    margin-bottom: 5px;
+/*    margin-top: 30px;*/
 }
 
 .colheight {
@@ -85,5 +92,6 @@
 
 #numbers p {
     color: #03a9f4;
-    font-size: 21px;
+    font-size: 28px;
+    
 }
