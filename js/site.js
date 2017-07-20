@@ -102,14 +102,16 @@ function generate3WComponent(config, data, geom) {
         var whatGroup = whatDimension.group();
         var whereGroup = whereDimension.group();
     }
-
-    var datatableGroup = whoDimension.group().reduce(
+    var dtDim = cf.dimension(function (d) {
+        return d["Organization"]
+    });
+    var datatableGroup = dtDim.group().reduce(
             function (p, v) {
                 if (v["Organization"] in p.listOrgas)
                     p.listOrgas[v["Organization"]]++;
-                else 
+                else
                     p.listOrgas[v["Organization"]] = 1;
-                
+
                 p.totalIndiv += +v["Individuals"];
                 p.totalTransfer += +v["Estimated"];
                 return p;
@@ -118,9 +120,9 @@ function generate3WComponent(config, data, geom) {
                 p.listOrgas[v["Organization"]]--;
                 if (p.listOrgas[v["Organization"]] == 0)
                     delete p.listOrgas[v["Organization"]];
-                
+
                 p.totalIndiv -= +v["Individuals"];
-                p.totalTransfer -=+v["Estimated"];
+                p.totalTransfer -= +v["Estimated"];
                 if (p.totalIndiv < 0) p.totalIndiv = 0;
                 if (p.totalTransfer < 0) p.totalTransfer = 0;
                 return p;
@@ -128,8 +130,8 @@ function generate3WComponent(config, data, geom) {
             function () {
                 return {
                     totalIndiv: 0,
-                    totalTransfer:0,
-                    listOrgas:{}
+                    totalTransfer: 0,
+                    listOrgas: {}
                 }
 
             }),
@@ -147,7 +149,7 @@ function generate3WComponent(config, data, geom) {
         .group(groupMecha)
         .renderTitle(true)
         .title(function (d) {
-            text = d.key + " | Beneficiaries : " + d.value;
+            text = d.key + " | Individuals : " + d.value;
             return text.toUpperCase();
         });
 
@@ -159,7 +161,7 @@ function generate3WComponent(config, data, geom) {
         .group(groupCond)
         .renderTitle(true)
         .title(function (d) {
-            text = d.key + " | Beneficiaries : " + d.value;
+            text = d.key + " | Individuals : " + d.value;
             return text.toUpperCase();
         });
 
@@ -171,7 +173,7 @@ function generate3WComponent(config, data, geom) {
         .group(groupRest)
         .renderTitle(true)
         .title(function (d) {
-            text = d.key + " | Beneficiaries : " + d.value;
+            text = d.key + " | Individuals : " + d.value;
             return text.toUpperCase();
         });
 
@@ -183,7 +185,7 @@ function generate3WComponent(config, data, geom) {
         .group(groupRuralUrban)
         .renderTitle(true)
         .title(function (d) {
-            text = d.key + " | Beneficiaries : " + d.value;
+            text = d.key + " | Individuals : " + d.value;
             return text.toUpperCase();
         });
 
@@ -201,7 +203,7 @@ function generate3WComponent(config, data, geom) {
         })
         .renderTitle(true)
         .title(function (d) {
-            text = d.key + " | Beneficiaries : " + d.value;
+            text = d.key + " | Individuals : " + d.value;
             return text.toUpperCase();
         })
         .xAxis().ticks(5);
@@ -220,7 +222,7 @@ function generate3WComponent(config, data, geom) {
         })
         .renderTitle(true)
         .title(function (d) {
-            text = d.key + " | Beneficiaries : " + d.value;
+            text = d.key + " | Individuals : " + d.value;
             return text.toUpperCase();
         })
         .xAxis().ticks(5)
@@ -235,46 +237,117 @@ function generate3WComponent(config, data, geom) {
         .center([0, 0])
         .zoom(0)
         .geojson(geom)
-        .colors(['#DDDDDD','#A7C1D3','#71A5CA','#3B88C0', '#056CB6'])
-        .colorDomain([0, 4])       
+        .colors(['#DDDDDD', '#A7C1D3', '#71A5CA', '#3B88C0', '#056CB6'])
+        .colorDomain([0, 4])
         .colorAccessor(function (d) {
-                var c =0
-                if(d>150000){
-                    c=4;
-                } else if (d>25000) {
-                    c=3;
-                } else if (d>10000) {
-                    c=2;
-                } else if (d>0) {
-                    c=1;
-                };
-                return c
+            var c = 0
+            if (d > 150000) {
+                c = 4;
+            } else if (d > 25000) {
+                c = 3;
+            } else if (d > 10000) {
+                c = 2;
+            } else if (d > 0) {
+                c = 1;
+            };
+            return c
         })
         .featureKeyAccessor(function (feature) {
             return feature.properties[config.joinAttribute];
         }).popup(function (d) {
-            text = lookup[d.key] + "<br/>Total of Individuals : "+d.value;
+            text = lookup[d.key] + "<br/>Total of Individuals : " + d.value;
             return text;
         })
         .renderPopup(true);
 
 
 
+    //    datatable.dimension(datatableGroup)
+    //        .group(rank)
+    //        .columns([
+    //        function (d) {
+    //                return d.key
+    //        },
+    //        function (d) {
+    //                return parseInt(d.value.totalIndiv)
+    //        },
+    //            function (d) {
+    //                return parseInt(d.value.totalTransfer)
+    //        }
+    //    ])
+    //        .sortBy(function (d) {
+    //            return d.value.totalIndiv
+    //        })
+    //        .order(d3.descending);
+
+    rank = function (d) {
+        return "org"
+    };
     datatable.dimension(datatableGroup)
         .group(rank)
         .columns([
         function (d) {
                 return d.key
+            },
+        function (d) {
+                return d.value.totalIndiv
         },
         function (d) {
-                return parseInt(d.value.totalIndiv)
-        },
-            function (d) {
-                return parseInt(d.value.totalTransfer)
+                return d.value.totalTransfer
         }
     ])
-    .sortBy(function(d){ return d.value.totalIndiv})
-    .order(d3.descending);
+        .sortBy(function (d) {
+            return d.value.totalTransfer
+        })
+        .order(d3.descending);
+
+    //    test #3
+    //        datatable.dimension(whoDimension)
+    //        .group().reduce(
+    //            function (p, v) {
+    //                if (v["Organization"] in p.listOrgas)
+    //                    p.listOrgas[v["Organization"]]++;
+    //                else
+    //                    p.listOrgas[v["Organization"]] = 1;
+    //
+    //                p.totalIndiv += +v["Individuals"];
+    //                p.totalTransfer += +v["Estimated"];
+    //                return p;
+    //            },
+    //            function (p, v) {
+    //                p.listOrgas[v["Organization"]]--;
+    //                if (p.listOrgas[v["Organization"]] == 0)
+    //                    delete p.listOrgas[v["Organization"]];
+    //
+    //                p.totalIndiv -= +v["Individuals"];
+    //                p.totalTransfer -= +v["Estimated"];
+    //                if (p.totalIndiv < 0) p.totalIndiv = 0;
+    //                if (p.totalTransfer < 0) p.totalTransfer = 0;
+    //                return p;
+    //            },
+    //            function () {
+    //                return {
+    //                    totalIndiv: 0,
+    //                    totalTransfer: 0,
+    //                    listOrgas: {}
+    //                }
+    //
+    //            })
+    //        .columns([
+    //        function (d) {
+    //                return d["Organization"]
+    //            },
+    //        function(d){
+    //            return d["Individuals"]
+    //        },
+    //        function(d){
+    //            return d["Estimated"]
+    //        }
+    //    ])
+    //    .sortBy(function(d){return d["Estimated"]})
+    //    .order(d3.descending);
+
+    // fin test #3
 
     dim = cf.dimension(function (d) {
         return d[config.whoFieldName];
