@@ -1,5 +1,5 @@
 var config = {
-    data: "data/cash.json",
+    data: "data/cash2.json",
     whoFieldName: "Organization",
     whatFieldName: "Cluster",
     whereFieldName: "DIS_CODE",
@@ -8,7 +8,8 @@ var config = {
     geo: "data/Somalia_District_Polygon.json",
     joinAttribute: "DIS_CODE",
     nameAttribute: "DIST_NAME",
-    color: "#03a9f4",
+    //    color: "#03a9f4",
+    color: "#3B88C0",
     mechanismField: "Modality",
     conditonalityField: "Conditionality",
     restrictionField: "Restriction",
@@ -26,6 +27,8 @@ function generate3WComponent(config, data, geom) {
     var whatChart = dc.rowChart('#hdx-3W-what');
     var whereChart = dc.leafletChoroplethChart('#hdx-3W-where');
 
+    var whoRegional = dc.barChart('#regionalCash');
+
     var filterMechanismPie = dc.pieChart('#filterMechanism');
     var filtercondPie = dc.pieChart('#filterConditionality');
     var filterRestPie = dc.pieChart('#filterRestriction');
@@ -40,6 +43,10 @@ function generate3WComponent(config, data, geom) {
     var numberClusters = dc.numberDisplay('#numberClusters');
 
     var cf = crossfilter(data);
+
+    var whoRegionalDim = cf.dimension(function (d) {
+        return d["REGION"];
+    });
 
     var datatableDim = cf.dimension(function (d) {
         return d[config.whoFieldName];
@@ -71,6 +78,9 @@ function generate3WComponent(config, data, geom) {
     // var whatGroup = whatDimension.group();
     // var whereGroup = whereDimension.group();
 
+    var whoRegionalGroup = whoRegionalDim.group().reduceSum(function (d) {
+        return d[config.sumField];
+    });
     var groupMecha = dimMecha.group().reduceSum(function (d) {
         return parseInt(d[config.sumField]);
     });
@@ -136,7 +146,7 @@ function generate3WComponent(config, data, geom) {
 
             }),
         rank = function (p) {
-            return "rank"
+            return ""
         };
 
     var all = cf.groupAll();
@@ -149,8 +159,8 @@ function generate3WComponent(config, data, geom) {
         .group(groupMecha)
         .renderTitle(true)
         .title(function (d) {
-            text = d.key + " | Individuals : " + d.value;
-            return text.toUpperCase();
+            text = d.key + " | Individuals : " + parseInt(d.value);
+            return capitalizeFirstLetter(text);
         });
 
     filtercondPie.width(190)
@@ -162,7 +172,7 @@ function generate3WComponent(config, data, geom) {
         .renderTitle(true)
         .title(function (d) {
             text = d.key + " | Individuals : " + d.value;
-            return text.toUpperCase();
+            return capitalizeFirstLetter(text);
         });
 
     filterRestPie.width(190)
@@ -174,7 +184,7 @@ function generate3WComponent(config, data, geom) {
         .renderTitle(true)
         .title(function (d) {
             text = d.key + " | Individuals : " + d.value;
-            return text.toUpperCase();
+            return capitalizeFirstLetter(text);
         });
 
     filterRuralUrban.width(190)
@@ -204,7 +214,7 @@ function generate3WComponent(config, data, geom) {
         .renderTitle(true)
         .title(function (d) {
             text = d.key + " | Individuals : " + d.value;
-            return text.toUpperCase();
+            return capitalizeFirstLetter(text);
         })
         .xAxis().ticks(5);
 
@@ -217,15 +227,35 @@ function generate3WComponent(config, data, geom) {
         })
         .labelOffsetY(13)
         .colors([config.color])
+        .colorAccessor(function (d) {
+            return 0;
+        })
+        .renderTitle(true)
+        .title(function (d) {
+            text = d.key + " | Individuals : " + d.value;
+            return capitalizeFirstLetter(text);
+        })
+        .xAxis().ticks(5)
+
+    whoRegional.width($('#regionalCash').width()).height(400)
+        .x(d3.scale.ordinal())
+        .xUnits(dc.units.ordinal)
+        .brushOn(false)
+        .dimension(whoRegionalDim)
+        .barPadding(0.1)
+        .outerPadding(0.05)
+        .group(whoRegionalGroup)
+        .colors([config.color])
         .colorAccessor(function (d, i) {
             return 0;
         })
         .renderTitle(true)
         .title(function (d) {
             text = d.key + " | Individuals : " + d.value;
-            return text.toUpperCase();
+            return capitalizeFirstLetter(text);
         })
-        .xAxis().ticks(5)
+        .yAxis().tickFormat(d3.format('.3s'));
+
 
     dc.dataCount('#count-info')
         .dimension(cf)
@@ -260,29 +290,6 @@ function generate3WComponent(config, data, geom) {
         })
         .renderPopup(true);
 
-
-
-    //    datatable.dimension(datatableGroup)
-    //        .group(rank)
-    //        .columns([
-    //        function (d) {
-    //                return d.key
-    //        },
-    //        function (d) {
-    //                return parseInt(d.value.totalIndiv)
-    //        },
-    //            function (d) {
-    //                return parseInt(d.value.totalTransfer)
-    //        }
-    //    ])
-    //        .sortBy(function (d) {
-    //            return d.value.totalIndiv
-    //        })
-    //        .order(d3.descending);
-
-    rank = function (d) {
-        return "*data are not complete"
-    };
     datatable.dimension(datatableGroup)
         .group(rank)
         .columns([
@@ -290,61 +297,16 @@ function generate3WComponent(config, data, geom) {
                 return d.key
             },
         function (d) {
-                return d.value.totalTransfer
+                return parseInt(d.value.totalIndiv)
+            },
+        function (d) {
+                return parseInt(d.value.totalTransfer)
         }
     ])
         .sortBy(function (d) {
             return d.value.totalTransfer
         })
         .order(d3.descending);
-
-    //    test #3
-    //        datatable.dimension(whoDimension)
-    //        .group().reduce(
-    //            function (p, v) {
-    //                if (v["Organization"] in p.listOrgas)
-    //                    p.listOrgas[v["Organization"]]++;
-    //                else
-    //                    p.listOrgas[v["Organization"]] = 1;
-    //
-    //                p.totalIndiv += +v["Individuals"];
-    //                p.totalTransfer += +v["Estimated"];
-    //                return p;
-    //            },
-    //            function (p, v) {
-    //                p.listOrgas[v["Organization"]]--;
-    //                if (p.listOrgas[v["Organization"]] == 0)
-    //                    delete p.listOrgas[v["Organization"]];
-    //
-    //                p.totalIndiv -= +v["Individuals"];
-    //                p.totalTransfer -= +v["Estimated"];
-    //                if (p.totalIndiv < 0) p.totalIndiv = 0;
-    //                if (p.totalTransfer < 0) p.totalTransfer = 0;
-    //                return p;
-    //            },
-    //            function () {
-    //                return {
-    //                    totalIndiv: 0,
-    //                    totalTransfer: 0,
-    //                    listOrgas: {}
-    //                }
-    //
-    //            })
-    //        .columns([
-    //        function (d) {
-    //                return d["Organization"]
-    //            },
-    //        function(d){
-    //            return d["Individuals"]
-    //        },
-    //        function(d){
-    //            return d["Estimated"]
-    //        }
-    //    ])
-    //    .sortBy(function(d){return d["Estimated"]})
-    //    .order(d3.descending);
-
-    // fin test #3
 
     dim = cf.dimension(function (d) {
         return d[config.whoFieldName];
@@ -474,6 +436,10 @@ function generate3WComponent(config, data, geom) {
             lookup[e.properties[config.joinAttribute]] = String(e.properties[config.nameAttribute]);
         });
         return lookup;
+    }
+
+    function capitalizeFirstLetter(string) {
+        return string.charAt(0).toUpperCase() + string.slice(1);
     }
 }
 

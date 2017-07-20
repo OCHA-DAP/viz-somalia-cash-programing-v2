@@ -20,85 +20,105 @@
 <body>
     <div class="container">
         <div class="row">
-            <div class="col-md-10">
-                <h2>Cash Programming in Somalia</h2>
+            <div class="col-md-9">
+                <div class="row">
+                    <h2>Cash Programming in Somalia</h2>
+                </div>
             </div>
             <div class="col-md-2" id="date">
-                <h4>May 2017</h4>
-            </div>
-        </div>
-        <div id="header" class="col-md-12"></div>
-        <div class="row">
-            <div class="col-xs-3" id="numbers">
                 <div class="row">
-                <p id="peopleAssisted"></p>
-                <h4>People assisted</h4>
-                    </div>
-            </div>
-            <div class="col-xs-3" id="numbers">
-                <div class="row">
-                <p id="amountTransfered"></p>
-                <h4>Transfered (USD)</h4>
-                    </div>
-            </div>
-            <div class="col-xs-3" id="numbers">
-                <div class="row">
-                <p id="numberClusters"></p>
-                <h4>Clusters</h4>
+                    <h4>May 2017</h4>
                 </div>
             </div>
-            <div class="col-xs-3" id="numbers">
+            <div class="col-md-1">
                 <div class="row">
-                <p id="numberOrgs"></p>
-                <h4>Partner organizations</h4>
+                    <a class="reset btn btn-primary btn-sm" id="reset" href="javascript:dc.filterAll();dc.redrawAll();">Reset All</a>
                 </div>
             </div>
         </div>
-        <div id="header2" class="col-md-12"></div>
+        <div class="row">
+            <div id="header" class="col-md-12"></div>
+        </div>
+        <div class="row">
+            <div class="col-xs-3" id="numbers">
+                <div class="row">
+                    <p id="peopleAssisted"></p>
+                    <h4>People assisted</h4>
+                </div>
+            </div>
+            <div class="col-xs-3" id="numbers">
+                <div class="row">
+                    <p id="amountTransfered"></p>
+                    <h4>Transferred (USD)</h4>
+                </div>
+            </div>
+            <div class="col-xs-3" id="numbers">
+                <div class="row">
+                    <p id="numberClusters"></p>
+                    <h4>Clusters</h4>
+                </div>
+            </div>
+            <div class="col-xs-3" id="numbers">
+                <div class="row">
+                    <p id="numberOrgs"></p>
+                    <h4>Partner organizations</h4>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div id="header2" class="col-md-12"></div>
+        </div>
         <div class="row">
             <div class="col-md-3">
                 <div class="row">
-                    <div>
-                        <h4>
-                            Conditionality
-                        </h4>
-                        <span style="font-style: italic; font-size: 11px">What must be done to receive the transfer? Conditional transfers are contingent upon the beneficiary fulfilling prerequisite conditions in order to receive a transfer. This includes cash for work. Unconditional transfers are delivered without prerequisite conditions.</span>
+                    <h4>
+                        Conditionality
+                    </h4>
+                    <div class="row">
+                        <div id="filterConditionality"></div>
                     </div>
-                    <div id="filterConditionality"></div>
+                    <div class="row">
+                        <p style="font-style: italic; font-size: 11px; text-align: justify">What must be done to receive the transfer? Conditional transfers are contingent upon the beneficiary fulfilling prerequisite conditions in order to receive a transfer. This includes cash for work. Unconditional transfers are delivered without prerequisite conditions.</p>
+                    </div>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="row">
-                    <div>
-                        <h4>
-                            Restriction
-                        </h4>
-                        <span style="font-style: italic; font-size: 11px">What can the transfer be used for? Restricted transfers (often delivered as a voucher) can only be used on a particular type of good/ service or redeemed at a particular vendor. Unrestricted transfers can be spent however the recipient chooses.</span>
+                    <h4>
+                        Restriction
+                    </h4>
+                    <div class="row">
+                        <div id="filterRestriction"></div>
                     </div>
-                    <div id="filterRestriction"></div>
+                    <div class="row">
+                        <p style="font-style: italic; font-size: 11px">What can the transfer be used for? Restricted transfers (often delivered as a voucher) can only be used on a particular type of good/ service or redeemed at a particular vendor. Unrestricted transfers can be spent however the recipient chooses.</p>
+                    </div>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="row">
-                    <div style="margin-bottom: 60px">
-                        <h4>
-                            Delivery mechanism
-                        </h4>
-                        <span style="font-style: italic; font-size: 11px">How is the transfer delivered? </span>
+                    <h4>
+                        Delivery mechanism
+                    </h4>
+                    <div class="row">
+                        <div id="filterMechanism"></div>
                     </div>
-                    <div id="filterMechanism"></div>
+                    <div class="row">
+                        <p style="font-style: italic; font-size: 11px">How is the transfer delivered? </p>
+                    </div>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="row">
-                    <div style="margin-bottom: 60px">
-                        <h4>
-                            Area
-                        </h4>
-                        <span style="font-style: italic; font-size: 11px">Is the transfer delivered in a rural or an urban area?</span>
+                    <h4>
+                        Area
+                    </h4>
+                    <div class="row">
+                        <div id="filterArea"></div>
                     </div>
-
-                    <div id="filterArea"></div>
+                    <div class="row">
+                        <p style="font-style: italic; font-size: 11px">Is the transfer delivered in a rural or an urban area?</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -111,32 +131,41 @@
             </div>
             <div class="col-md-6">
                 <div class="row">
-                    <a class="reset btn btn-primary btn-sm" id="reset" href="javascript:dc.filterAll();dc.redrawAll();">Reset All</a>
-
+                    <h4>Cash transfer by district</h4>
                     <div id="hdx-3W-where" class="hdx-3w-chart"></div>
+                </div>
+                <div class="row">
+                    <p style="margin-top: 5px; font-size: 10px">The boundaries and names shown and the designations used on this map do not imply official endorsement or acceptance by the United Nations.</p>
                 </div>
             </div>
         </div>
-        <div class="row">
 
+        <div class="row">
             <div class="col-md-6">
-                <h4>Cash transfer by partner</h4>
+                <h4>Top 15 cash transfer by partner (No. individuals)</h4>
                 <div id="hdx-3W-who" class="hdx-3w-chart"></div>
             </div>
             <div class="col-md-6">
-                <h4>Data table </h4>
+                <h4>Cash transfers by partners</h4>
                 <div style="overflow:scroll; height: 400px">
-                    <table class="list table table-hover" id="datatable">
+                    <table class="list table table-bordered" id="datatable">
                         <thead>
                             <tr>
-                                <th>Organization</th>
-                                <th>Total amount transferred</th>
+                                <th>Partner</th>
+                                <th>No. Individuals</th>
+                                <th>Transfer value</th>
                             </tr>
                         </thead>
                     </table>
                 </div>
 
             </div>
+        </div>
+        <div class="row">
+            <div class="row" style="margin-top: 10px">
+                <h4 style="text-align: center">Cash transfers by region (No. individuals)</h4>
+            </div>
+            <div class="col-md-12" id="regionalCash"></div>
         </div>
     </div>
     <script src="js/site.js"></script>

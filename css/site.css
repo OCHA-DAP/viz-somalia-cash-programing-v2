@@ -16,6 +16,11 @@
     width: 100%;
 }
 
+#whoRegional {
+    height: 360px;
+    width: 100%;
+}
+
 #wheretitle {
     padding-bottom: 10px;
 }
@@ -64,13 +69,6 @@
     padding-left: 40px;
 }
 
-#description p {
-    font-family: hevetica-heue;
-    font-size: 19px;
-    text-align: justify;
-    padding-left: 0px;
-    color: #848484;
-}
 
 #date {
     text-align: right;
@@ -79,7 +77,8 @@
 
 #reset {
     float: right;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
+    margin-top: 40px;
 }
 
 .col-md-4 {
@@ -92,6 +91,10 @@
 
 #numbers p {
     color: #03a9f4;
-    font-size: 28px;
+    font-size: 36px;
     
+}
+
+h4{
+    color: #999999;
 }
