@@ -281,7 +281,7 @@ function generate3WComponent(config, data, geom) {
     //        .order(d3.descending);
 
     rank = function (d) {
-        return "org"
+        return "*data are not complete"
     };
     datatable.dimension(datatableGroup)
         .group(rank)
@@ -289,9 +289,6 @@ function generate3WComponent(config, data, geom) {
         function (d) {
                 return d.key
             },
-        function (d) {
-                return d.value.totalIndiv
-        },
         function (d) {
                 return d.value.totalTransfer
         }
