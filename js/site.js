@@ -8,7 +8,6 @@ var config = {
     geo: "data/Somalia_District_Polygon.json",
     joinAttribute: "DIS_CODE",
     nameAttribute: "DIST_NAME",
-    //    color: "#03a9f4",
     color: "#3B88C0",
     mechanismField: "Modality",
     conditonalityField: "Conditionality",
@@ -222,7 +221,7 @@ function generate3WComponent(config, data, geom) {
             text = d.key + " | No. Individuals : " + formatComma(d.value);
             return capitalizeFirstLetter(text);
         })
-        .xAxis().ticks(5);
+        .xAxis().ticks(0);
 
     whatChart.width($('#hxd-3W-what').width()).height(400)
         .dimension(whatDimension)
@@ -241,7 +240,7 @@ function generate3WComponent(config, data, geom) {
             text = d.key + " | No. Individuals : " + formatComma(d.value);
             return capitalizeFirstLetter(text);
         })
-        .xAxis().ticks(5)
+        .xAxis().ticks(0)
 
     whoRegional.width($('#regionalCash').width()).height(400)
         .x(d3.scale.ordinal())
@@ -260,7 +259,8 @@ function generate3WComponent(config, data, geom) {
             text = d.key + " | No. Individuals : " + formatComma(d.value);
             return capitalizeFirstLetter(text);
         })
-        .yAxis().tickFormat(d3.format('.3s'));
+        .yAxis().ticks(0);
+//        .yAxis().tickFormat(d3.format('.3s'));
 
 
     dc.dataCount('#count-info')

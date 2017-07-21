@@ -1,10 +1,10 @@
 .dc-chart g.row text {
-    fill: black;
+    fill: #cccccc;
     font-size: 0.8em;
 }
 
 .dc-chart .pie-slice {
-    fill: black;
+    fill: #cccccc;
 }
 
 .x-axis-label {
@@ -24,6 +24,8 @@
 #wheretitle {
     padding-bottom: 10px;
 }
+
+#regionalCash svg g g.axis.y { display: none; }
 
 #header {
     border-bottom-color: #dddddd;
