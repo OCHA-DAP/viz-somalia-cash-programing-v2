@@ -119,8 +119,10 @@ function generate3WComponent(config, data, geom) {
             function (p, v) {
                 if (v["Organization"] in p.listOrgas)
                     p.listOrgas[v["Organization"]]++;
-                else
+                else{
                     p.listOrgas[v["Organization"]] = 1;
+                }
+
 
                 p.totalIndiv += +v["Individuals"];
                 p.totalTransfer += +v["Estimated"];
@@ -133,8 +135,8 @@ function generate3WComponent(config, data, geom) {
 
                 p.totalIndiv -= +v["Individuals"];
                 p.totalTransfer -= +v["Estimated"];
-                if (p.totalIndiv < 0) p.totalIndiv = 0;
-                if (p.totalTransfer < 0) p.totalTransfer = 0;
+//                if (p.totalIndiv < 0) p.totalIndiv = 0;
+//                if (p.totalTransfer < 0) p.totalTransfer = 0;
                 return p;
             },
             function () {
@@ -151,6 +153,10 @@ function generate3WComponent(config, data, geom) {
 
     var all = cf.groupAll();
 
+    var formatComma = d3.format(',');
+    var formatDecimalComma = d3.format(",.0f")
+    var formatMoney = function(d) { return "$ " + formatDecimalComma(d); }
+
     filterMechanismPie.width(190)
         .height(190)
         .radius(80)
@@ -159,7 +165,7 @@ function generate3WComponent(config, data, geom) {
         .group(groupMecha)
         .renderTitle(true)
         .title(function (d) {
-            text = d.key + " | Individuals : " + parseInt(d.value);
+            text = d.key + " | No. Individuals : " + formatComma(d.value);
             return capitalizeFirstLetter(text);
         });
 
@@ -171,7 +177,7 @@ function generate3WComponent(config, data, geom) {
         .group(groupCond)
         .renderTitle(true)
         .title(function (d) {
-            text = d.key + " | Individuals : " + d.value;
+            text = d.key + " | No. Individuals : " + formatComma(d.value);
             return capitalizeFirstLetter(text);
         });
 
@@ -183,7 +189,7 @@ function generate3WComponent(config, data, geom) {
         .group(groupRest)
         .renderTitle(true)
         .title(function (d) {
-            text = d.key + " | Individuals : " + d.value;
+            text = d.key + " | No. Individuals : " + formatComma(d.value);
             return capitalizeFirstLetter(text);
         });
 
@@ -195,8 +201,8 @@ function generate3WComponent(config, data, geom) {
         .group(groupRuralUrban)
         .renderTitle(true)
         .title(function (d) {
-            text = d.key + " | Individuals : " + d.value;
-            return text.toUpperCase();
+            text = d.key + " | No. Individuals : " + formatComma(d.value);
+            return capitalizeFirstLetter(text);
         });
 
     whoChart.width($('#hxd-3W-who').width()).height(400)
@@ -213,7 +219,7 @@ function generate3WComponent(config, data, geom) {
         })
         .renderTitle(true)
         .title(function (d) {
-            text = d.key + " | Individuals : " + d.value;
+            text = d.key + " | No. Individuals : " + formatComma(d.value);
             return capitalizeFirstLetter(text);
         })
         .xAxis().ticks(5);
@@ -232,7 +238,7 @@ function generate3WComponent(config, data, geom) {
         })
         .renderTitle(true)
         .title(function (d) {
-            text = d.key + " | Individuals : " + d.value;
+            text = d.key + " | No. Individuals : " + formatComma(d.value);
             return capitalizeFirstLetter(text);
         })
         .xAxis().ticks(5)
@@ -242,7 +248,7 @@ function generate3WComponent(config, data, geom) {
         .xUnits(dc.units.ordinal)
         .brushOn(false)
         .dimension(whoRegionalDim)
-        .barPadding(0.1)
+        .barPadding(0.4)
         .outerPadding(0.05)
         .group(whoRegionalGroup)
         .colors([config.color])
@@ -251,7 +257,7 @@ function generate3WComponent(config, data, geom) {
         })
         .renderTitle(true)
         .title(function (d) {
-            text = d.key + " | Individuals : " + d.value;
+            text = d.key + " | No. Individuals : " + formatComma(d.value);
             return capitalizeFirstLetter(text);
         })
         .yAxis().tickFormat(d3.format('.3s'));
@@ -261,7 +267,7 @@ function generate3WComponent(config, data, geom) {
         .dimension(cf)
         .group(all);
 
-    whereChart.width($('#hxd-3W-where').width()).height(360)
+    whereChart.width($('#hxd-3W-where').width()).height(400)
         .dimension(whereDimension)
         .group(whereGroup)
         .center([0, 0])
@@ -273,9 +279,9 @@ function generate3WComponent(config, data, geom) {
             var c = 0
             if (d > 150000) {
                 c = 4;
-            } else if (d > 25000) {
+            } else if (d > 50000) {
                 c = 3;
-            } else if (d > 10000) {
+            } else if (d > 1000) {
                 c = 2;
             } else if (d > 0) {
                 c = 1;
@@ -285,7 +291,7 @@ function generate3WComponent(config, data, geom) {
         .featureKeyAccessor(function (feature) {
             return feature.properties[config.joinAttribute];
         }).popup(function (d) {
-            text = lookup[d.key] + "<br/>Total of Individuals : " + d.value;
+            text = lookup[d.key] + "<br/>No. Individuals : " + formatComma(d.value);
             return text;
         })
         .renderPopup(true);
@@ -300,11 +306,11 @@ function generate3WComponent(config, data, geom) {
                 return parseInt(d.value.totalIndiv)
             },
         function (d) {
-                return parseInt(d.value.totalTransfer)
+                return formatMoney(d.value.totalTransfer)
         }
     ])
         .sortBy(function (d) {
-            return d.value.totalTransfer
+            return d.value.totalIndiv;
         })
         .order(d3.descending);
 
@@ -386,7 +392,8 @@ function generate3WComponent(config, data, geom) {
         .valueAccessor(peopleA);
 
     amountTransfered.group(gp)
-        .valueAccessor(amountT);
+        .valueAccessor(amountT)
+        .formatNumber(formatMoney);
 
     numberOrgs.group(gp)
         .valueAccessor(numO);
@@ -409,21 +416,7 @@ function generate3WComponent(config, data, geom) {
 
     var g = d3.selectAll('#hdx-3W-who').select('svg').append('g');
 
-    g.append('text')
-        .attr('class', 'x-axis-label')
-        .attr('text-anchor', 'middle')
-        .attr('x', $('#hdx-3W-who').width() / 2)
-        .attr('y', 400)
-        .text(axisText);
 
-    var g = d3.selectAll('#hdx-3W-what').select('svg').append('g');
-
-    g.append('text')
-        .attr('class', 'x-axis-label')
-        .attr('text-anchor', 'middle')
-        .attr('x', $('#hdx-3W-what').width() / 2)
-        .attr('y', 400)
-        .text(axisText);
 
     function zoomToGeom(geom) {
         var bounds = d3.geo.bounds(geom);
@@ -441,6 +434,8 @@ function generate3WComponent(config, data, geom) {
     function capitalizeFirstLetter(string) {
         return string.charAt(0).toUpperCase() + string.slice(1);
     }
+
+
 }
 
 function hxlProxyToJSON(input, headers) {
@@ -497,3 +492,13 @@ $.when(dataCall, geomCall).then(function (dataArgs, geomArgs) {
     });
     generate3WComponent(config, data, geom);
 });
+
+
+//var formatComma = d3.format(","),
+//    formatDecimal = d3.format(".1f"),
+//    formatDecimalComma = d3.format(",.2f"),
+//    formatSuffix = d3.format("s"),
+//    formatSuffixDecimal1 = d3.format(".1s"),
+//    formatSuffixDecimal2 = d3.format(".2s"),
+//    formatMoney = function(d) { return "$" + formatDecimalComma(d); },
+//    formatPercent = d3.format(",.2%");

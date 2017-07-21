@@ -91,10 +91,24 @@
 
 #numbers p {
     color: #03a9f4;
-    font-size: 36px;
-    
+    font-size: 30px;
+
 }
 
 h4{
     color: #999999;
+}
+
+/*#filters filterConditionality {
+    border-width: 1px;
+    border-color: #e6e7e8;
+    border-style: solid;
+}*/
+
+#filters p{
+  text-align: justify;
+  font-size: 10px;
+  padding-left: 0px;
+  padding-top: 10px;
+  width: 200px;
 }
