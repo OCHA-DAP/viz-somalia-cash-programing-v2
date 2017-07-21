@@ -156,7 +156,7 @@ function generate3WComponent(config, data, geom) {
     var formatDecimalComma = d3.format(",.0f")
     var formatMoney = function (d) {
         return "$ " + formatDecimalComma(d);
-    }
+    };
 
     filterMechanismPie.width(190)
         .height(190)
@@ -194,12 +194,15 @@ function generate3WComponent(config, data, geom) {
             return capitalizeFirstLetter(text);
         });
 
+    var colorScale = d3.scale.ordinal().range(['#DDDDDD', '#A7C1D3', '#71A5CA', '#3B88C0', '#056CB6']);
+    
     filterRuralUrban.width(190)
         .height(190)
         .radius(80)
         .innerRadius(30)
         .dimension(dimRuralUrban)
         .group(groupRuralUrban)
+        .colors(colorScale)
         .renderTitle(true)
         .title(function (d) {
             text = d.key + " | No. Individuals : " + formatComma(d.value);
