@@ -240,7 +240,7 @@ function generate3WComponent(config, data, geom) {
             text = d.key + " | No. Individuals : " + formatComma(d.value);
             return capitalizeFirstLetter(text);
         })
-        .xAxis().ticks(0)
+        .xAxis().ticks(0);
 
     whoRegional.width($('#regionalCash').width()).height(400)
         .x(d3.scale.ordinal())
@@ -259,7 +259,7 @@ function generate3WComponent(config, data, geom) {
             text = d.key + " | No. Individuals : " + formatComma(d.value);
             return capitalizeFirstLetter(text);
         })
-        .yAxis().ticks(0);
+        .xAxis().ticks(0);
 //        .yAxis().tickFormat(d3.format('.3s'));
 
 
@@ -389,7 +389,8 @@ function generate3WComponent(config, data, geom) {
     };
 
     peopleAssisted.group(gp)
-        .valueAccessor(peopleA);
+        .valueAccessor(peopleA)
+        .formatNumber(formatComma);
 
     amountTransfered.group(gp)
         .valueAccessor(amountT)
