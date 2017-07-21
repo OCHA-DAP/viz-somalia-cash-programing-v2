@@ -118,7 +118,7 @@ function generate3WComponent(config, data, geom) {
             function (p, v) {
                 if (v["Organization"] in p.listOrgas)
                     p.listOrgas[v["Organization"]]++;
-                else{
+                else {
                     p.listOrgas[v["Organization"]] = 1;
                 }
 
@@ -134,8 +134,8 @@ function generate3WComponent(config, data, geom) {
 
                 p.totalIndiv -= +v["Individuals"];
                 p.totalTransfer -= +v["Estimated"];
-//                if (p.totalIndiv < 0) p.totalIndiv = 0;
-//                if (p.totalTransfer < 0) p.totalTransfer = 0;
+                //                if (p.totalIndiv < 0) p.totalIndiv = 0;
+                //                if (p.totalTransfer < 0) p.totalTransfer = 0;
                 return p;
             },
             function () {
@@ -154,7 +154,9 @@ function generate3WComponent(config, data, geom) {
 
     var formatComma = d3.format(',');
     var formatDecimalComma = d3.format(",.0f")
-    var formatMoney = function(d) { return "$ " + formatDecimalComma(d); }
+    var formatMoney = function (d) {
+        return "$ " + formatDecimalComma(d);
+    }
 
     filterMechanismPie.width(190)
         .height(190)
@@ -260,7 +262,7 @@ function generate3WComponent(config, data, geom) {
             return capitalizeFirstLetter(text);
         })
         .xAxis().ticks(0);
-//        .yAxis().tickFormat(d3.format('.3s'));
+    //        .yAxis().tickFormat(d3.format('.3s'));
 
 
     dc.dataCount('#count-info')
@@ -329,12 +331,8 @@ function generate3WComponent(config, data, geom) {
                 p.numOrgs++;
             }
 
-            if (v["Cluster"] in p.clusters)
-                p.clusters[v["Cluster"]]++;
-            else {
-                p.clusters[v["Cluster"]] = 1;
-                p.numClusters++;
-            }
+            if (p.peopleAssisted != 0)
+                p.avg = p.amountTransfered / (p.peopleAssisted / 5);
 
             return p;
         },
@@ -348,24 +346,20 @@ function generate3WComponent(config, data, geom) {
                 p.numOrgs--;
             }
 
-            p.clusters[v["Cluster"]]--;
-            if (p.clusters[v["Cluster"]] == 0) {
-                delete p.clusters[v["Cluster"]];
-                p.numClusters--;
-            }
-
             if (p.peopleAssisted < 0) p.peopleAssisted = 0;
             if (p.amountTransfered < 0) p.amountTransfered = 0;
+            if (p.peopleAssisted != 0)
+                p.avg = p.amountTransfered / (p.peopleAssisted / 5);
+            
             return p;
         },
         function () {
             return {
                 peopleAssisted: 0,
                 amountTransfered: 0,
+                avg:0,
                 numOrgs: 0,
-                numClusters: 0,
                 numOrgs: 0,
-                clusters: {},
                 orgas: {}
             };
 
@@ -384,8 +378,8 @@ function generate3WComponent(config, data, geom) {
         return d.numOrgs;
     };
 
-    var numC = function (d) {
-        return d.numClusters;
+    var numAvg = function (d) {
+        return d.avg;
     };
 
     peopleAssisted.group(gp)
@@ -400,7 +394,8 @@ function generate3WComponent(config, data, geom) {
         .valueAccessor(numO);
 
     numberClusters.group(gp)
-        .valueAccessor(numC);
+        .valueAccessor(numAvg)
+         .formatNumber(formatMoney);
 
     dc.renderAll();
 
