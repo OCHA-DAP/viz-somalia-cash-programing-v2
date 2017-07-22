@@ -10,7 +10,9 @@
 .dc-chart .axis.x text {
     fill: #4d4d4d;
 }
-.dc-chart .axis.x  path, .axis.x line {
+
+.dc-chart .axis.x path,
+.axis.x line {
     fill: none;
     stroke: #fff;
 }
@@ -29,20 +31,21 @@
     padding-bottom: 10px;
 }
 
-
-#hdx-3W-who svg g g.axis { 
-    display: none; 
+#hdx-3W-who svg g g.axis {
+    display: none;
 }
 
-#hdx-3W-what svg g g.axis { 
-    display: none; 
+#hdx-3W-what svg g g.axis {
+    display: none;
 }
 
-#regionalCash svg g g.axis.y { 
-    display: none; 
+#regionalCash svg g g.axis.y {
+    display: none;
 }
 
-
+#regionalCash {
+    padding-bottom: 15px;
+}
 
 #header {
     border-bottom-color: #dddddd;
@@ -56,7 +59,15 @@
     border-bottom-style: solid;
     border-bottom-width: 1px;
     margin-bottom: 15px;
-/*    margin-top: 30px;*/
+    /*    margin-top: 30px;*/
+}
+
+#header3 {
+    border-bottom-color: #dddddd;
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    margin-bottom: 15px;
+    margin-top: 10px;
 }
 
 .colheight {
@@ -88,7 +99,6 @@
     padding-left: 40px;
 }
 
-
 #date {
     text-align: right;
     margin-top: 35px;
@@ -111,27 +121,25 @@
 #numbers p {
     color: #03a9f4;
     font-size: 30px;
-
 }
 
-h4{
+h4 {
     color: #999999;
 }
 
-
-#filters p{
-  text-align: justify;
-  font-size: 10px;
-  padding-left: 0px;
-  padding-top: 10px;
-  width: 200px;
+#filters p {
+    text-align: justify;
+    font-size: 10px;
+    padding-left: 0px;
+    padding-top: 10px;
+    width: 200px;
 }
 
-#dataTab{
+#dataTab {
     overflow-y: auto;
     height: 400px;
 }
 
-.table .table-bordered th {
-    font-size: 16px;
+#datatable .table .table-condensed thead tr th {
+    font-size: 9px;
 }

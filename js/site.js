@@ -77,9 +77,11 @@ function generate3WComponent(config, data, geom) {
     // var whatGroup = whatDimension.group();
     // var whereGroup = whereDimension.group();
 
+    // var sortedRegDim = whoRegionalDim.top(Infinity);
     var whoRegionalGroup = whoRegionalDim.group().reduceSum(function (d) {
-        return d[config.sumField];
+        return d[config.sumField]
     });
+
     var groupMecha = dimMecha.group().reduceSum(function (d) {
         return parseInt(d[config.sumField]);
     });
@@ -111,44 +113,75 @@ function generate3WComponent(config, data, geom) {
         var whatGroup = whatDimension.group();
         var whereGroup = whereDimension.group();
     }
-    var dtDim = cf.dimension(function (d) {
-        return d["Organization"]
-    });
-    var datatableGroup = dtDim.group().reduce(
-            function (p, v) {
-                if (v["Organization"] in p.listOrgas)
-                    p.listOrgas[v["Organization"]]++;
-                else {
-                    p.listOrgas[v["Organization"]] = 1;
-                }
 
 
-                p.totalIndiv += +v["Individuals"];
-                p.totalTransfer += +v["Estimated"];
-                return p;
-            },
-            function (p, v) {
-                p.listOrgas[v["Organization"]]--;
-                if (p.listOrgas[v["Organization"]] == 0)
-                    delete p.listOrgas[v["Organization"]];
+    var datatableGroup = whoDimension.group().reduce(
+        function (p, v) {
+            p.totalIndiv += +v["Individuals"];
+            p.totalTransfer += +v["Estimated"];
+            // console.log(v["Organization"]);
+            return p;
+        },
+        function (p, v) {
+            p.totalIndiv -= +v["Individuals"];
+            p.totalTransfer -= +v["Estimated"];
+            return p;
+        },
+        function () {
+            return {
+                totalIndiv: 0,
+                totalTransfer: 0
+            }
 
-                p.totalIndiv -= +v["Individuals"];
-                p.totalTransfer -= +v["Estimated"];
-                //                if (p.totalIndiv < 0) p.totalIndiv = 0;
-                //                if (p.totalTransfer < 0) p.totalTransfer = 0;
-                return p;
-            },
-            function () {
-                return {
-                    totalIndiv: 0,
-                    totalTransfer: 0,
-                    listOrgas: {}
-                }
+        });
 
-            }),
-        rank = function (p) {
-            return ""
-        };
+
+    var gp = cf.groupAll().reduce(
+        function (p, v) {
+            p.peopleAssisted += +v[config.sumField];
+            p.amountTransfered += +v["Estimated"];
+
+            if (v["Organization"] in p.orgas)
+                p.orgas[v["Organization"]]++;
+            else {
+                p.orgas[v["Organization"]] = 1;
+                p.numOrgs++;
+            }
+
+            if (p.peopleAssisted != 0)
+                p.avg = p.amountTransfered / (p.peopleAssisted / 5);
+
+            return p;
+        },
+        function (p, v) {
+            p.peopleAssisted -= +v[config.sumField];
+            p.amountTransfered -= +v["Estimated"];
+
+            p.orgas[v["Organization"]]--;
+            if (p.orgas[v["Organization"]] == 0) {
+                delete p.orgas[v["Organization"]];
+                p.numOrgs--;
+            }
+
+            if (p.peopleAssisted < 0) p.peopleAssisted = 0;
+            if (p.amountTransfered < 0) p.amountTransfered = 0;
+            if (p.peopleAssisted != 0)
+                p.avg = p.amountTransfered / (p.peopleAssisted / 5);
+
+            return p;
+        },
+        function () {
+            return {
+                peopleAssisted: 0,
+                amountTransfered: 0,
+                avg: 0,
+                numOrgs: 0,
+                numOrgs: 0,
+                orgas: {}
+            };
+
+        }
+    );
 
     var all = cf.groupAll();
 
@@ -158,10 +191,13 @@ function generate3WComponent(config, data, geom) {
         return "$ " + formatDecimalComma(d);
     };
 
+    var colorScale = d3.scale.ordinal().range(['#DDDDDD', '#A7C1D3', '#71A5CA', '#3B88C0', '#056CB6']);
+
+
     filterMechanismPie.width(190)
         .height(190)
         .radius(80)
-        .innerRadius(30)
+        .innerRadius(25)
         .dimension(dimMecha)
         .group(groupMecha)
         .renderTitle(true)
@@ -173,9 +209,10 @@ function generate3WComponent(config, data, geom) {
     filtercondPie.width(190)
         .height(190)
         .radius(80)
-        .innerRadius(30)
+        .innerRadius(25)
         .dimension(dimCond)
         .group(groupCond)
+        .colors(colorScale)
         .renderTitle(true)
         .title(function (d) {
             text = d.key + " | No. Individuals : " + formatComma(d.value);
@@ -185,7 +222,7 @@ function generate3WComponent(config, data, geom) {
     filterRestPie.width(190)
         .height(190)
         .radius(80)
-        .innerRadius(30)
+        .innerRadius(25)
         .dimension(dimRest)
         .group(groupRest)
         .renderTitle(true)
@@ -194,12 +231,11 @@ function generate3WComponent(config, data, geom) {
             return capitalizeFirstLetter(text);
         });
 
-    var colorScale = d3.scale.ordinal().range(['#DDDDDD', '#A7C1D3', '#71A5CA', '#3B88C0', '#056CB6']);
-    
+
     filterRuralUrban.width(190)
         .height(190)
         .radius(80)
-        .innerRadius(30)
+        .innerRadius(25)
         .dimension(dimRuralUrban)
         .group(groupRuralUrban)
         .colors(colorScale)
@@ -268,6 +304,7 @@ function generate3WComponent(config, data, geom) {
     //        .yAxis().tickFormat(d3.format('.3s'));
 
 
+
     dc.dataCount('#count-info')
         .dimension(cf)
         .group(all);
@@ -301,73 +338,7 @@ function generate3WComponent(config, data, geom) {
         })
         .renderPopup(true);
 
-    datatable.dimension(datatableGroup)
-        .group(rank)
-        .columns([
-        function (d) {
-                return d.key
-            },
-        function (d) {
-                return parseInt(d.value.totalIndiv)
-            },
-        function (d) {
-                return formatMoney(d.value.totalTransfer)
-        }
-    ])
-        .sortBy(function (d) {
-            return d.value.totalIndiv;
-        })
-        .order(d3.descending);
 
-    dim = cf.dimension(function (d) {
-        return d[config.whoFieldName];
-    });
-
-    gp = cf.groupAll().reduce(
-        function (p, v) {
-            p.peopleAssisted += +v[config.sumField];
-            p.amountTransfered += +v["Estimated"];
-            if (v["Organization"] in p.orgas)
-                p.orgas[v["Organization"]]++;
-            else {
-                p.orgas[v["Organization"]] = 1;
-                p.numOrgs++;
-            }
-
-            if (p.peopleAssisted != 0)
-                p.avg = p.amountTransfered / (p.peopleAssisted / 5);
-
-            return p;
-        },
-        function (p, v) {
-            p.peopleAssisted -= +v[config.sumField];
-            p.amountTransfered -= +v["Estimated"];
-
-            p.orgas[v["Organization"]]--;
-            if (p.orgas[v["Organization"]] == 0) {
-                delete p.orgas[v["Organization"]];
-                p.numOrgs--;
-            }
-
-            if (p.peopleAssisted < 0) p.peopleAssisted = 0;
-            if (p.amountTransfered < 0) p.amountTransfered = 0;
-            if (p.peopleAssisted != 0)
-                p.avg = p.amountTransfered / (p.peopleAssisted / 5);
-            
-            return p;
-        },
-        function () {
-            return {
-                peopleAssisted: 0,
-                amountTransfered: 0,
-                avg:0,
-                numOrgs: 0,
-                numOrgs: 0,
-                orgas: {}
-            };
-
-        }
-    );
 
     var peopleA = function (d) {
         return d.peopleAssisted;
@@ -394,23 +365,38 @@ function generate3WComponent(config, data, geom) {
         .formatNumber(formatMoney);
 
     numberOrgs.group(gp)
-        .valueAccessor(numO);
+        .valueAccessor(numO)
+        .formatNumber(formatComma);
 
     numberClusters.group(gp)
         .valueAccessor(numAvg)
-         .formatNumber(formatMoney);
+        .formatNumber(formatMoney);
+
+    datatable.dimension(datatableGroup)
+        .group(function (d) {
+            return ""
+        })
+        .columns([
+                function (d) {
+                return d.key
+                },
+                    function (d) {
+                return d.value.totalIndiv
+                        },
+                    function (d) {
+                return formatComma(d.value.totalTransfer)
+                    }
+                ])
+        .sortBy(function (d) {
+            return formatMoney(d.value.totalIndiv);
+        })
+        .order(d3.descending);
 
     dc.renderAll();
 
     var map = whereChart.map();
 
     zoomToGeom(geom);
-
-    if (config.sum) {
-        var axisText = config.sumField.substr(0);
-    } else {
-        var axisText = 'Activities';
-    }
 
 
     var g = d3.selectAll('#hdx-3W-who').select('svg').append('g');
