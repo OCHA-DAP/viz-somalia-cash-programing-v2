@@ -381,14 +381,14 @@ function generate3WComponent(config, data, geom) {
                 return d.key
                 },
                     function (d) {
-                return d.value.totalIndiv
+                return formatComma(d.value.totalIndiv)
                         },
                     function (d) {
-                return formatComma(d.value.totalTransfer)
+                return formatMoney(d.value.totalTransfer)
                     }
                 ])
         .sortBy(function (d) {
-            return formatMoney(d.value.totalIndiv);
+            return d.value.totalIndiv;
         })
         .order(d3.descending);
 
