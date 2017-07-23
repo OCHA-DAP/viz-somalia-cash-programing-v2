@@ -47,12 +47,12 @@ function generate3WComponent(config, data, geom) {
         return d["REGION"];
     });
 
-    var datatableDim = cf.dimension(function (d) {
-        return d[config.whoFieldName];
-    });
     var whoDimension = cf.dimension(function (d) {
         return d[config.whoFieldName];
     });
+
+    var datatableDim = whoDimension;
+
     var whatDimension = cf.dimension(function (d) {
         return d[config.whatFieldName];
     });
@@ -98,33 +98,31 @@ function generate3WComponent(config, data, geom) {
         return parseInt(d[config.sumField]);
     });
 
-    if (config.sum) {
-        var whoGroup = whoDimension.group().reduceSum(function (d) {
-            return parseInt(d[config.sumField]);
-        });
-        var whatGroup = whatDimension.group().reduceSum(function (d) {
-            return parseInt(d[config.sumField]);
-        });
-        var whereGroup = whereDimension.group().reduceSum(function (d) {
-            return parseInt(d[config.sumField]);
-        });
-    } else {
-        var whoGroup = whoDimension.group();
-        var whatGroup = whatDimension.group();
-        var whereGroup = whereDimension.group();
-    }
 
+    var whoGroup = whoDimension.group().reduceSum(function (d) {
+        return parseInt(d[config.sumField]);
+    });
 
-    var datatableGroup = whoDimension.group().reduce(
+    var whatGroup = whatDimension.group().reduceSum(function (d) {
+        return parseInt(d[config.sumField]);
+    });
+
+    var whereGroup = whereDimension.group().reduceSum(function (d) {
+        return parseInt(d[config.sumField]);
+    });
+
+    var datatableGroup = datatableDim.group().reduce(
         function (p, v) {
-            p.totalIndiv += +v["Individuals"];
-            p.totalTransfer += +v["Estimated"];
-            // console.log(v["Organization"]);
+            p.totalIndiv += +parseInt(v["Individuals"]);
+            p.totalTransfer += +parseInt(v["Estimated"]);
+
+            //console.log(p.org + ' ' + p.totalIndiv);
             return p;
         },
         function (p, v) {
-            p.totalIndiv -= +v["Individuals"];
-            p.totalTransfer -= +v["Estimated"];
+            p.totalIndiv -= +parseInt(v["Individuals"]);
+            p.totalTransfer -= +parseInt(v["Estimated"]);
+
             return p;
         },
         function () {
@@ -150,7 +148,9 @@ function generate3WComponent(config, data, geom) {
 
             if (p.peopleAssisted != 0)
                 p.avg = p.amountTransfered / (p.peopleAssisted / 5);
-
+            else
+                p.avg = 0;
+            //console.log(p.orgas);
             return p;
         },
         function (p, v) {
@@ -374,7 +374,7 @@ function generate3WComponent(config, data, geom) {
 
     datatable.dimension(datatableGroup)
         .group(function (d) {
-            return ""
+            return ''
         })
         .columns([
                 function (d) {

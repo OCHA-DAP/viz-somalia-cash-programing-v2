@@ -1,3 +1,7 @@
+#body {
+    font-size: 20px;
+}
+
 .dc-chart g.row text {
     fill: #4d4d4d;
     font-size: 0.8em;
@@ -67,7 +71,7 @@
     border-bottom-style: solid;
     border-bottom-width: 1px;
     margin-bottom: 15px;
-    margin-top: 10px;
+    /*    margin-top: 10px;*/
 }
 
 .colheight {
@@ -129,6 +133,7 @@ h4 {
 
 #filters p {
     text-align: justify;
+    color: #4d4d4d;
     font-size: 10px;
     padding-left: 0px;
     padding-top: 10px;
@@ -140,6 +145,12 @@ h4 {
     height: 400px;
 }
 
-#datatable .table .table-condensed thead tr th {
-    font-size: 9px;
+.table.table-condensed thead tr th {
+    font-size: 14px;
+    color: #999999;
+}
+
+.table.table-condensed tr td {
+    font-size: 12px;
+    color: #4d4d4d;
 }
