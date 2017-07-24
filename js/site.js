@@ -390,6 +390,7 @@ function generate3WComponent(config, data, geom) {
         .sortBy(function (d) {
             return d.value.totalIndiv;
         })
+        .size(46)
         .order(d3.descending);
 
     dc.renderAll();
