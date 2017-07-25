@@ -207,13 +207,14 @@ function generate3WComponent(config, data, geom) {
             return capitalizeFirstLetter(text);
         });
 
+    var colorScale3 = d3.scale.ordinal().range(['#DDDDDD', '#A7C1D3', '#71A5CA', '#3B88C0']);
     filtercondPie.width(190)
         .height(190)
         .radius(80)
         .innerRadius(25)
         .dimension(dimCond)
         .group(groupCond)
-        .colors(colorScale)
+        .colors(colorScale3)
         .renderTitle(true)
         .title(function (d) {
             text = d.key + " | No. Individuals : " + formatComma(d.value);
