@@ -9,7 +9,7 @@ var config = {
     joinAttribute: "DIS_CODE",
     nameAttribute: "DIST_NAME",
     color: "#3B88C0",
-    mechanismField: "Modality",
+    mechanismField: "Delivery mechanism",
     conditonalityField: "Conditionality",
     restrictionField: "Restriction",
     ruralField: "RURAL/URBAN",
@@ -200,6 +200,7 @@ function generate3WComponent(config, data, geom) {
         .innerRadius(25)
         .dimension(dimMecha)
         .group(groupMecha)
+        .colors(colorScale)
         .renderTitle(true)
         .title(function (d) {
             text = d.key + " | No. Individuals : " + formatComma(d.value);
