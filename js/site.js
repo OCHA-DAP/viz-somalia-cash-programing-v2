@@ -1,10 +1,10 @@
 var config = {
-    data: "data/cash2.json",
+    data: "data/cash-june.json",
     whoFieldName: "Organization",
     whatFieldName: "Cluster",
     whereFieldName: "DIS_CODE",
     sum: true,
-    sumField: "Individuals",
+    sumField: "Beneficiaries",
     geo: "data/Somalia_District_Polygon.json",
     joinAttribute: "DIS_CODE",
     nameAttribute: "DIST_NAME",
@@ -13,7 +13,7 @@ var config = {
     conditonalityField: "Conditionality",
     restrictionField: "Restriction",
     ruralField: "RURAL/URBAN",
-    indivField: "Individuals",
+    indivField: "Beneficiaries",
     estimatedField: "Estimated"
 };
 
@@ -113,14 +113,14 @@ function generate3WComponent(config, data, geom) {
 
     var datatableGroup = datatableDim.group().reduce(
         function (p, v) {
-            p.totalIndiv += +parseInt(v["Individuals"]);
+            p.totalIndiv += +parseInt(v["Beneficiaries"]);
             p.totalTransfer += +parseInt(v["Estimated"]);
 
             //console.log(p.org + ' ' + p.totalIndiv);
             return p;
         },
         function (p, v) {
-            p.totalIndiv -= +parseInt(v["Individuals"]);
+            p.totalIndiv -= +parseInt(v["Beneficiaries"]);
             p.totalTransfer -= +parseInt(v["Estimated"]);
 
             return p;
@@ -136,7 +136,7 @@ function generate3WComponent(config, data, geom) {
 
     var gp = cf.groupAll().reduce(
         function (p, v) {
-            p.peopleAssisted += +v[config.sumField];
+            p.peopleAssisted += +v["Beneficiaries"];
             p.amountTransfered += +v["Estimated"];
 
             if (v["Organization"] in p.orgas)
@@ -203,7 +203,7 @@ function generate3WComponent(config, data, geom) {
         .colors(colorScale)
         .renderTitle(true)
         .title(function (d) {
-            text = d.key + " | No. Individuals : " + formatComma(d.value);
+            text = d.key + " | No. beneficiaries : " + formatComma(d.value);
             return capitalizeFirstLetter(text);
         });
 
@@ -217,7 +217,7 @@ function generate3WComponent(config, data, geom) {
         .colors(colorScale3)
         .renderTitle(true)
         .title(function (d) {
-            text = d.key + " | No. Individuals : " + formatComma(d.value);
+            text = d.key + " | No. beneficiaries : " + formatComma(d.value);
             return capitalizeFirstLetter(text);
         });
 
@@ -229,7 +229,7 @@ function generate3WComponent(config, data, geom) {
         .group(groupRest)
         .renderTitle(true)
         .title(function (d) {
-            text = d.key + " | No. Individuals : " + formatComma(d.value);
+            text = d.key + " | No. beneficiaries : " + formatComma(d.value);
             return capitalizeFirstLetter(text);
         });
 
@@ -243,7 +243,7 @@ function generate3WComponent(config, data, geom) {
         .colors(colorScale)
         .renderTitle(true)
         .title(function (d) {
-            text = d.key + " | No. Individuals : " + formatComma(d.value);
+            text = d.key + " | No. beneficiaries : " + formatComma(d.value);
             return capitalizeFirstLetter(text);
         });
 
@@ -261,7 +261,7 @@ function generate3WComponent(config, data, geom) {
         })
         .renderTitle(true)
         .title(function (d) {
-            text = d.key + " | No. Individuals : " + formatComma(d.value);
+            text = d.key + " | No. beneficiaries : " + formatComma(d.value);
             return capitalizeFirstLetter(text);
         })
         .xAxis().ticks(0);
@@ -280,7 +280,7 @@ function generate3WComponent(config, data, geom) {
         })
         .renderTitle(true)
         .title(function (d) {
-            text = d.key + " | No. Individuals : " + formatComma(d.value);
+            text = d.key + " | No. beneficiaries : " + formatComma(d.value);
             return capitalizeFirstLetter(text);
         })
         .xAxis().ticks(0);
@@ -299,7 +299,7 @@ function generate3WComponent(config, data, geom) {
         })
         .renderTitle(true)
         .title(function (d) {
-            text = d.key + " | No. Individuals : " + formatComma(d.value);
+            text = d.key + " | No. beneficiaries : " + formatComma(d.value);
             return capitalizeFirstLetter(text);
         })
         .xAxis().ticks(0);
@@ -335,7 +335,7 @@ function generate3WComponent(config, data, geom) {
         .featureKeyAccessor(function (feature) {
             return feature.properties[config.joinAttribute];
         }).popup(function (d) {
-            text = lookup[d.key] + "<br/>No. Individuals : " + formatComma(d.value);
+            text = lookup[d.key] + "<br/>No. beneficiaries : " + formatComma(d.value);
             return text;
         })
         .renderPopup(true);
