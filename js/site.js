@@ -26,7 +26,7 @@ function generate3WComponent(config, data, geom) {
     var whatChart = dc.rowChart('#hdx-3W-what');
     var whereChart = dc.leafletChoroplethChart('#hdx-3W-where');
 
-    var whoRegional = dc.barChart('#regionalCash');
+    var whoRegional = dc.rowChart('#regionalCash');
 
     var filterMechanismPie = dc.pieChart('#filterMechanism');
     var filtercondPie = dc.pieChart('#filterConditionality');
@@ -285,16 +285,17 @@ function generate3WComponent(config, data, geom) {
         })
         .xAxis().ticks(0);
 
-    whoRegional.width($('#regionalCash').width()).height(400)
-        .x(d3.scale.ordinal())
-        .xUnits(dc.units.ordinal)
-        .brushOn(false)
+
+    whoRegional.width(585).height(400)
         .dimension(whoRegionalDim)
-        .barPadding(0.4)
-        .outerPadding(0.05)
         .group(whoRegionalGroup)
+        .elasticX(true)
+        .data(function (group) {
+            return group.top(15);
+        })
+        .labelOffsetY(13)
         .colors([config.color])
-        .colorAccessor(function (d, i) {
+        .colorAccessor(function (d) {
             return 0;
         })
         .renderTitle(true)
@@ -303,7 +304,26 @@ function generate3WComponent(config, data, geom) {
             return capitalizeFirstLetter(text);
         })
         .xAxis().ticks(0);
-    //        .yAxis().tickFormat(d3.format('.3s'));
+
+    //    whoRegional.width($('#whoRegional').width()).height(400)
+    //        .x(d3.scale.ordinal())
+    //        .xUnits(dc.units.ordinal)
+    //        .brushOn(false)
+    //        .dimension(whoRegionalDim)
+    //        .barPadding(0.1)
+    //        .outerPadding(0.01)
+    //        .group(whoRegionalGroup)
+    //        .colors([config.color])
+    //        .colorAccessor(function (d, i) {
+    //            return 0;
+    //        })
+    //        .renderTitle(true)
+    //        .title(function (d) {
+    //            text = d.key + " | No. beneficiaries : " + formatComma(d.value);
+    //            return capitalizeFirstLetter(text);
+    //        })
+    //        .xAxis().ticks(0);
+
 
 
 

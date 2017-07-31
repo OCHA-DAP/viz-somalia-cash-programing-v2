@@ -43,13 +43,16 @@
     display: none;
 }
 
-#regionalCash svg g g.axis.y {
+#regionalCash svg g g.axis {
     display: none;
 }
 
-#regionalCash {
-    padding-bottom: 15px;
+
+/*
+#regionalCash svg g g.axis.y {
+    display: none;
 }
+*/
 
 #header {
     border-bottom-color: #dddddd;
