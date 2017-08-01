@@ -111,13 +111,43 @@ function generate3WComponent(config, data, geom) {
         return parseInt(d[config.sumField]);
     });
 
+    var whereGroupReduced = whereDimension.group().reduce(
+        function (p, v) {
+            p.benef += +v[config.sumField];
+            p.amountTransfered += +v["Transfer value"];
+            p.sum += +1;
+
+            if (p.sum != 0)
+                p.avg = p.amountTransfered / p.sum;
+
+            return p;
+        },
+        function (p, v) {
+            p.benef -= +v[config.sumField];
+            p.amountTransfered -= +v["Transfer value"];
+            p.sum -= +1;
+
+            if (p.sum != 0)
+                p.avg = p.amountTransfered / p.sum;
+
+            return p;
+        },
+        function () {
+            return {
+                benef: 0,
+                amountTransfered: 0,
+                sum: 0,
+                avg: 0
+            }
+        });
+
 
 
     var gp = cf.groupAll().reduce(
         function (p, v) {
             p.peopleAssisted += +v[config.sumField];
             p.amountTransfered += +v["Transfer value"];
-            p.totalHH += +v["Households"];
+            p.totalHH += +1;
 
             if (v["Organization"] in p.orgas)
                 p.orgas[v["Organization"]]++;
@@ -137,7 +167,7 @@ function generate3WComponent(config, data, geom) {
         function (p, v) {
             p.peopleAssisted -= +v[config.sumField];
             p.amountTransfered -= +v["Transfer value"];
-            p.totalHH -= +v["Households"];
+            p.totalHH -= +1;
 
             p.orgas[v["Organization"]]--;
             if (p.orgas[v["Organization"]] == 0) {
@@ -170,7 +200,7 @@ function generate3WComponent(config, data, geom) {
     var formatComma = d3.format(',');
     var formatDecimalComma = d3.format(",.0f");
     var formatDecimal = function (d) {
-        ret = d3.format(".3f");
+        ret = d3.format(".1f");
         return "$ " + ret(d);
     };
     var formatMoney = function (d) {
@@ -207,12 +237,15 @@ function generate3WComponent(config, data, geom) {
             return capitalizeFirstLetter(text);
         });
 
+    var colorScale4 = d3.scale.ordinal().range(['#A7C1D3', '#71A5CA', '#3B88C0']);
+
     filterRestPie.width(190)
         .height(190)
         .radius(80)
         .innerRadius(25)
         .dimension(dimRest)
         .group(groupRest)
+        .colors(colorScale4)
         .renderTitle(true)
         .title(function (d) {
             text = d.key + " | No. beneficiaries : " + formatComma(d.value);
@@ -300,7 +333,7 @@ function generate3WComponent(config, data, geom) {
 
     whereChart.width($('#hxd-3W-where').width()).height(400)
         .dimension(whereDimension)
-        .group(whereGroup)
+        .group(whereGroupReduced)
         .center([0, 0])
         .zoom(0)
         .geojson(geom)
@@ -308,13 +341,13 @@ function generate3WComponent(config, data, geom) {
         .colorDomain([0, 4])
         .colorAccessor(function (d) {
             var c = 0
-            if (d > 150000) {
+            if (d.benef > 150000) {
                 c = 4;
-            } else if (d > 50000) {
+            } else if (d.benef > 50000) {
                 c = 3;
-            } else if (d > 1000) {
+            } else if (d.benef > 1000) {
                 c = 2;
-            } else if (d > 0) {
+            } else if (d.benef > 0) {
                 c = 1;
             };
             return c
@@ -322,7 +355,9 @@ function generate3WComponent(config, data, geom) {
         .featureKeyAccessor(function (feature) {
             return feature.properties[config.joinAttribute];
         }).popup(function (d) {
-            text = lookup[d.key] + "<br/>No. beneficiaries : " + formatComma(d.value);
+            text = lookup[d.key] + 
+                "<br/>No. beneficiaries : " + formatComma(d.value.benef)+
+                "<br/>Avg transfer value : " + formatDecimal(d.value.avg);
             return text;
         })
         .renderPopup(true);
