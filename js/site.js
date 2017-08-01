@@ -13,7 +13,7 @@ var config = {
     conditonalityField: "Conditionality",
     restrictionField: "Restriction",
     ruralField: "RURAL/URBAN",
-    indivField: "Beneficiaries",
+    transferValue: "Beneficiaries",
     estimatedField: "Estimated"
 };
 
@@ -26,14 +26,14 @@ function generate3WComponent(config, data, geom) {
     var whatChart = dc.rowChart('#hdx-3W-what');
     var whereChart = dc.leafletChoroplethChart('#hdx-3W-where');
 
-    var whoRegional = dc.barChart('#regionalCash');
+    var whoRegional = dc.rowChart('#regionalCash');
 
     var filterMechanismPie = dc.pieChart('#filterMechanism');
     var filtercondPie = dc.pieChart('#filterConditionality');
     var filterRestPie = dc.pieChart('#filterRestriction');
     var filterRuralUrban = dc.pieChart('#filterArea');
 
-    var datatable = dc.dataTable('#datatable');
+
 
 
     var peopleAssisted = dc.numberDisplay('#peopleAssisted');
@@ -51,7 +51,7 @@ function generate3WComponent(config, data, geom) {
         return d[config.whoFieldName];
     });
 
-    var datatableDim = whoDimension;
+
 
     var whatDimension = cf.dimension(function (d) {
         return d[config.whatFieldName];
@@ -111,33 +111,13 @@ function generate3WComponent(config, data, geom) {
         return parseInt(d[config.sumField]);
     });
 
-    var datatableGroup = datatableDim.group().reduce(
-        function (p, v) {
-            p.totalIndiv += +parseInt(v["Beneficiaries"]);
-            p.totalTransfer += +parseInt(v["Estimated"]);
-
-            //console.log(p.org + ' ' + p.totalIndiv);
-            return p;
-        },
-        function (p, v) {
-            p.totalIndiv -= +parseInt(v["Beneficiaries"]);
-            p.totalTransfer -= +parseInt(v["Estimated"]);
-
-            return p;
-        },
-        function () {
-            return {
-                totalIndiv: 0,
-                totalTransfer: 0
-            }
-
-        });
 
 
     var gp = cf.groupAll().reduce(
         function (p, v) {
-            p.peopleAssisted += +v["Beneficiaries"];
-            p.amountTransfered += +v["Estimated"];
+            p.peopleAssisted += +v[config.sumField];
+            p.amountTransfered += +v["Transfer value"];
+            p.totalHH += +v["Households"];
 
             if (v["Organization"] in p.orgas)
                 p.orgas[v["Organization"]]++;
@@ -146,16 +126,18 @@ function generate3WComponent(config, data, geom) {
                 p.numOrgs++;
             }
 
-            if (p.peopleAssisted != 0)
-                p.avg = p.amountTransfered / (p.peopleAssisted / 5);
-            else
+            if (p.totalHH != 0) {
+                p.avg = p.amountTransfered / p.totalHH;
+                // console.log(p.totalHH);
+            } else
                 p.avg = 0;
             //console.log(p.orgas);
             return p;
         },
         function (p, v) {
             p.peopleAssisted -= +v[config.sumField];
-            p.amountTransfered -= +v["Estimated"];
+            p.amountTransfered -= +v["Transfer value"];
+            p.totalHH -= +v["Households"];
 
             p.orgas[v["Organization"]]--;
             if (p.orgas[v["Organization"]] == 0) {
@@ -165,8 +147,8 @@ function generate3WComponent(config, data, geom) {
 
             if (p.peopleAssisted < 0) p.peopleAssisted = 0;
             if (p.amountTransfered < 0) p.amountTransfered = 0;
-            if (p.peopleAssisted != 0)
-                p.avg = p.amountTransfered / (p.peopleAssisted / 5);
+            if (p.totalHH != 0)
+                p.avg = p.amountTransfered / p.totalHH;
 
             return p;
         },
@@ -174,8 +156,8 @@ function generate3WComponent(config, data, geom) {
             return {
                 peopleAssisted: 0,
                 amountTransfered: 0,
+                totalHH: 0,
                 avg: 0,
-                numOrgs: 0,
                 numOrgs: 0,
                 orgas: {}
             };
@@ -186,7 +168,11 @@ function generate3WComponent(config, data, geom) {
     var all = cf.groupAll();
 
     var formatComma = d3.format(',');
-    var formatDecimalComma = d3.format(",.0f")
+    var formatDecimalComma = d3.format(",.0f");
+    var formatDecimal = function (d) {
+        ret = d3.format(".3f");
+        return "$ " + ret(d);
+    };
     var formatMoney = function (d) {
         return "$ " + formatDecimalComma(d);
     };
@@ -266,7 +252,7 @@ function generate3WComponent(config, data, geom) {
         })
         .xAxis().ticks(0);
 
-    whatChart.width($('#hxd-3W-what').width()).height(400)
+    whatChart.width($('#hxd-3W-what').width()).height(250)
         .dimension(whatDimension)
         .group(whatGroup)
         .elasticX(true)
@@ -285,16 +271,17 @@ function generate3WComponent(config, data, geom) {
         })
         .xAxis().ticks(0);
 
-    whoRegional.width($('#regionalCash').width()).height(400)
-        .x(d3.scale.ordinal())
-        .xUnits(dc.units.ordinal)
-        .brushOn(false)
+
+    whoRegional.width(585).height(400)
         .dimension(whoRegionalDim)
-        .barPadding(0.4)
-        .outerPadding(0.05)
         .group(whoRegionalGroup)
+        .elasticX(true)
+        .data(function (group) {
+            return group.top(15);
+        })
+        .labelOffsetY(13)
         .colors([config.color])
-        .colorAccessor(function (d, i) {
+        .colorAccessor(function (d) {
             return 0;
         })
         .renderTitle(true)
@@ -303,7 +290,7 @@ function generate3WComponent(config, data, geom) {
             return capitalizeFirstLetter(text);
         })
         .xAxis().ticks(0);
-    //        .yAxis().tickFormat(d3.format('.3s'));
+
 
 
 
@@ -372,28 +359,8 @@ function generate3WComponent(config, data, geom) {
 
     numberClusters.group(gp)
         .valueAccessor(numAvg)
-        .formatNumber(formatMoney);
+        .formatNumber(formatDecimal);
 
-    datatable.dimension(datatableGroup)
-        .group(function (d) {
-            return ''
-        })
-        .columns([
-                function (d) {
-                return d.key
-                },
-                    function (d) {
-                return formatComma(d.value.totalIndiv)
-                        },
-                    function (d) {
-                return formatMoney(d.value.totalTransfer)
-                    }
-                ])
-        .sortBy(function (d) {
-            return d.value.totalIndiv;
-        })
-        .size(46)
-        .order(d3.descending);
 
     dc.renderAll();
 
@@ -426,34 +393,33 @@ function generate3WComponent(config, data, geom) {
 
 }
 
-function hxlProxyToJSON(input, headers) {
-    var output = [];
-    var keys = []
-    input.forEach(function (e, i) {
-        if (i == 0) {
-            e.forEach(function (e2, i2) {
-                var parts = e2.split('+');
-                var key = parts[0]
-                if (parts.length > 1) {
-                    var atts = parts.splice(1, parts.length);
-                    atts.sort();
-                    atts.forEach(function (att) {
-                        key += '+' + att
-                    });
-                }
-                keys.push(key);
-            });
-        } else {
-            var row = {};
-            e.forEach(function (e2, i2) {
-                row[keys[i2]] = e2;
-            });
-            output.push(row);
-        }
-    });
-    return output;
-}
-
+//function hxlProxyToJSON(input, headers) {
+//    var output = [];
+//    var keys = []
+//    input.forEach(function (e, i) {
+//        if (i == 0) {
+//            e.forEach(function (e2, i2) {
+//                var parts = e2.split('+');
+//                var key = parts[0]
+//                if (parts.length > 1) {
+//                    var atts = parts.splice(1, parts.length);
+//                    atts.sort();
+//                    atts.forEach(function (att) {
+//                        key += '+' + att
+//                    });
+//                }
+//                keys.push(key);
+//            });
+//        } else {
+//            var row = {};
+//            e.forEach(function (e2, i2) {
+//                row[keys[i2]] = e2;
+//            });
+//            output.push(row);
+//        }
+//    });
+//    return output;
+//}
 //load 3W data
 
 var dataCall = $.ajax({
