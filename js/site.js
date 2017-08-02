@@ -111,35 +111,35 @@ function generate3WComponent(config, data, geom) {
         return parseInt(d[config.sumField]);
     });
 
-    var whereGroupReduced = whereDimension.group().reduce(
-        function (p, v) {
-            p.benef += +v[config.sumField];
-            p.amountTransfered += +v["Transfer value"];
-            p.sum += +1;
-
-            if (p.sum != 0)
-                p.avg = p.amountTransfered / p.sum;
-
-            return p;
-        },
-        function (p, v) {
-            p.benef -= +v[config.sumField];
-            p.amountTransfered -= +v["Transfer value"];
-            p.sum -= +1;
-
-            if (p.sum != 0)
-                p.avg = p.amountTransfered / p.sum;
-
-            return p;
-        },
-        function () {
-            return {
-                benef: 0,
-                amountTransfered: 0,
-                sum: 0,
-                avg: 0
-            }
-        });
+    // var whereGroupReduced = whereDimension.group().reduce(
+    //     function (p, v) {
+    //         p.benef += +v[config.sumField];
+    //         p.amountTransfered += +v["Transfer value"];
+    //         p.sum += +1;
+    //
+    //         if (p.sum != 0)
+    //             p.avg = p.amountTransfered / p.sum;
+    //
+    //         return p;
+    //     },
+    //     function (p, v) {
+    //         p.benef -= +v[config.sumField];
+    //         p.amountTransfered -= +v["Transfer value"];
+    //         p.sum -= +1;
+    //
+    //         if (p.sum != 0)
+    //             p.avg = p.amountTransfered / p.sum;
+    //
+    //         return p;
+    //     },
+    //     function () {
+    //         return {
+    //             benef: 0,
+    //             amountTransfered: 0,
+    //             sum: 0,
+    //             avg: 0
+    //         }
+    //     });
 
 
 
@@ -336,7 +336,7 @@ function generate3WComponent(config, data, geom) {
 
     whereChart.width($('#hxd-3W-where').width()).height(400)
         .dimension(whereDimension)
-        .group(whereGroupReduced)
+        .group(whereGroup)
         .center([0, 0])
         .zoom(0)
         .geojson(geom)
@@ -344,13 +344,13 @@ function generate3WComponent(config, data, geom) {
         .colorDomain([0, 4])
         .colorAccessor(function (d) {
             var c = 0
-            if (d.benef > 150000) {
+            if (d > 150000) {
                 c = 4;
-            } else if (d.benef > 50000) {
+            } else if (d > 50000) {
                 c = 3;
-            } else if (d.benef > 1000) {
+            } else if (d > 1000) {
                 c = 2;
-            } else if (d.benef > 0) {
+            } else if (d > 0) {
                 c = 1;
             };
             return c
@@ -359,8 +359,8 @@ function generate3WComponent(config, data, geom) {
             return feature.properties[config.joinAttribute];
         }).popup(function (d) {
             text = lookup[d.key] +
-                "<br/>No. beneficiaries : " + formatComma(d.value.benef)+
-                "<br/>Avg transfer value : " + formatDecimal(d.value.avg);
+                "<br/>No. beneficiaries : " + formatComma(d.value);
+                //"<br/>Avg transfer value : " + formatDecimal(d.value.avg);
             return text;
         })
         .renderPopup(true);
