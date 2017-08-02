@@ -146,8 +146,8 @@ function generate3WComponent(config, data, geom) {
     var gp = cf.groupAll().reduce(
         function (p, v) {
             p.peopleAssisted += +v[config.sumField];
-            p.amountTransfered += +v["Transfer value"];
-            p.totalHH += +1;
+            p.amountTransfered += +v["Estimated"];
+            p.totalHH += +v["Household"];
 
             if (v["Organization"] in p.orgas)
                 p.orgas[v["Organization"]]++;
@@ -166,8 +166,9 @@ function generate3WComponent(config, data, geom) {
         },
         function (p, v) {
             p.peopleAssisted -= +v[config.sumField];
-            p.amountTransfered -= +v["Transfer value"];
-            p.totalHH -= +1;
+            p.amountTransfered -= +v["Estimated"];
+            p.totalHH -= +v["Household"];
+
 
             p.orgas[v["Organization"]]--;
             if (p.orgas[v["Organization"]] == 0) {
@@ -177,6 +178,8 @@ function generate3WComponent(config, data, geom) {
 
             if (p.peopleAssisted < 0) p.peopleAssisted = 0;
             if (p.amountTransfered < 0) p.amountTransfered = 0;
+            if (p.totalHH < 0) p.totalHH = 0;
+
             if (p.totalHH != 0)
                 p.avg = p.amountTransfered / p.totalHH;
 
@@ -355,7 +358,7 @@ function generate3WComponent(config, data, geom) {
         .featureKeyAccessor(function (feature) {
             return feature.properties[config.joinAttribute];
         }).popup(function (d) {
-            text = lookup[d.key] + 
+            text = lookup[d.key] +
                 "<br/>No. beneficiaries : " + formatComma(d.value.benef)+
                 "<br/>Avg transfer value : " + formatDecimal(d.value.avg);
             return text;
