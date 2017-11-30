@@ -5,14 +5,17 @@
 .dc-chart g.row text {
     fill: #4d4d4d;
     font-size: 0.8em;
+    font-family: Raleway;
 }
 
 .dc-chart .pie-slice {
     fill: #4d4d4d;
+    font-family: Raleway;
 }
 
 .dc-chart .axis.x text {
     fill: #4d4d4d;
+    font-family: Raleway;
 }
 
 .dc-chart .axis.x path,
@@ -130,10 +133,12 @@
 
 h4 {
     color: #999999;
+    font-family: Raleway;
 }
 
 #filters p {
     text-align: justify;
+    font-family: Raleway;
     color: #4d4d4d;
     font-size: 10px;
     padding-left: 0px;

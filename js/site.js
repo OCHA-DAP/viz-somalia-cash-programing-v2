@@ -1,5 +1,5 @@
 var config = {
-    data: "data/cash-july.json",
+    data: "data/cash-august.json",
     whoFieldName: "Organization",
     whatFieldName: "Cluster",
     whereFieldName: "DIS_CODE",
@@ -198,6 +198,7 @@ function generate3WComponent(config, data, geom) {
         });
 
     var colorScale3 = d3.scale.ordinal().range(['#DDDDDD', '#A7C1D3', '#71A5CA', '#3B88C0']);
+
     filtercondPie.width(190)
         .height(190)
         .radius(80)
@@ -207,7 +208,7 @@ function generate3WComponent(config, data, geom) {
         .colors(colorScale3)
         .renderTitle(true)
         .title(function (d) {
-            text = d.key + " | No. beneficiaries : " + formatComma(d.value);
+            text = d.key + " | No. Individuals : " + formatComma(d.value);
             return capitalizeFirstLetter(text);
         });
 
@@ -219,7 +220,7 @@ function generate3WComponent(config, data, geom) {
         .group(groupRest)
         .renderTitle(true)
         .title(function (d) {
-            text = d.key + " | No. beneficiaries : " + formatComma(d.value);
+            text = d.key + " | No. Individuals : " + formatComma(d.value);
             return capitalizeFirstLetter(text);
         });
 
@@ -233,7 +234,7 @@ function generate3WComponent(config, data, geom) {
         .colors(colorScale)
         .renderTitle(true)
         .title(function (d) {
-            text = d.key + " | No. beneficiaries : " + formatComma(d.value);
+            text = d.key + " | No. Individuals : " + formatComma(d.value);
             return capitalizeFirstLetter(text);
         });
 
@@ -251,7 +252,7 @@ function generate3WComponent(config, data, geom) {
         })
         .renderTitle(true)
         .title(function (d) {
-            text = d.key + " | No. beneficiaries : " + formatComma(d.value);
+            text = d.key + " | No. Individuals : " + formatComma(d.value);
             return capitalizeFirstLetter(text);
         })
         .xAxis().ticks(0);
@@ -270,7 +271,7 @@ function generate3WComponent(config, data, geom) {
         })
         .renderTitle(true)
         .title(function (d) {
-            text = d.key + " | No. beneficiaries : " + formatComma(d.value);
+            text = d.key + " | No. Individuals : " + formatComma(d.value);
             return capitalizeFirstLetter(text);
         })
         .xAxis().ticks(0);
@@ -290,8 +291,8 @@ function generate3WComponent(config, data, geom) {
         })
         .renderTitle(true)
         .title(function (d) {
-            text = d.key + " | No. beneficiaries : " + formatComma(d.value);
-            return capitalizeFirstLetter(text);
+            text = d.key + " | No. Individuals : " + formatComma(d.value);
+            return text; //capitalizeFirstLetter(text);
         })
         .xAxis().ticks(0);
 
@@ -326,7 +327,7 @@ function generate3WComponent(config, data, geom) {
         .featureKeyAccessor(function (feature) {
             return feature.properties[config.joinAttribute];
         }).popup(function (d) {
-            text = lookup[d.key] + "<br/>No. beneficiaries : " + formatComma(d.value);
+            text = lookup[d.key] + "<br/>No. Individuals : " + formatComma(d.value);
             return text;
         })
         .renderPopup(true);
@@ -351,17 +352,24 @@ function generate3WComponent(config, data, geom) {
 
     peopleAssisted.group(gp)
         .valueAccessor(peopleA)
-        .formatNumber(formatComma);
+        .html({
+            none: "<span style=\"color:steelblue; font-size: 26px;\">unavailable</span>"
+        })
+        .formatNumber(formatDecimalComma);
+    //        .formatNumber(formatComma);
 
     amountTransfered.group(gp)
         .valueAccessor(amountT)
+        .html({
+            none: "<span style=\"color:steelblue; font-size: 26px;\">unavailable</span>"
+        })
         .formatNumber(formatMoney);
 
     numberOrgs.group(gp)
         .valueAccessor(numO)
-        .formatNumber(formatComma);
+        .formatNumber(formatDecimalComma);
 
-    //j'ai la flemme de changer le nom de la variable mais c'est le AVG
+    //j'ai la flemme de changer le nom de la variable mais c'est le AVG 
     numberClusters.group(gp)
         .valueAccessor(numAvg)
         .formatNumber(formatDecimalAVG);
@@ -398,6 +406,34 @@ function generate3WComponent(config, data, geom) {
 
 }
 
+//function hxlProxyToJSON(input, headers) {
+//    var output = [];
+//    var keys = []
+//    input.forEach(function (e, i) {
+//        if (i == 0) {
+//            e.forEach(function (e2, i2) {
+//                var parts = e2.split('+');
+//                var key = parts[0]
+//                if (parts.length > 1) {
+//                    var atts = parts.splice(1, parts.length);
+//                    atts.sort();
+//                    atts.forEach(function (att) {
+//                        key += '+' + att
+//                    });
+//                }
+//                keys.push(key);
+//            });
+//        } else {
+//            var row = {};
+//            e.forEach(function (e2, i2) {
+//                row[keys[i2]] = e2;
+//            });
+//            output.push(row);
+//        }
+//    });
+//    return output;
+//}
+//load 3W data
 
 var dataCall = $.ajax({
     type: 'GET',
