@@ -2,6 +2,16 @@
     font-size: 20px;
 }
 
+#title h3 {
+    font-family: Raleway;
+    color: #999999;
+}
+
+#link {
+    font-family: Raleway;
+    padding-left: 0px;
+}
+
 .dc-chart g.row text {
     fill: #4d4d4d;
     font-size: 1.2em;
@@ -16,7 +26,6 @@
 
 .dc-chart .pie-slice {
     fill: #4d4d4d;
-    font-size: 1.1em;
     font-family: Raleway;
 }
 
