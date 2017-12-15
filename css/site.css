@@ -4,12 +4,19 @@
 
 .dc-chart g.row text {
     fill: #4d4d4d;
-    font-size: 0.9em;
+    font-size: 1.2em;
+    font-family: Raleway;
+}
+
+#hdx-3W-what g.row text {
+    fill: #4d4d4d;
+    font-size: 1.3em;
     font-family: Raleway;
 }
 
 .dc-chart .pie-slice {
     fill: #4d4d4d;
+    font-size: 1.1em;
     font-family: Raleway;
 }
 
@@ -140,7 +147,7 @@ h4 {
     text-align: justify;
     font-family: Raleway;
     font-size: 0.9em;
-    color: #4d4d4d;
+    color: #999999;
     padding-left: 0px;
     padding-top: 10px;
     width: 200px;
