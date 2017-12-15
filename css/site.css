@@ -4,7 +4,7 @@
 
 .dc-chart g.row text {
     fill: #4d4d4d;
-    font-size: 0.8em;
+    font-size: 0.9em;
     font-family: Raleway;
 }
 
@@ -139,8 +139,8 @@ h4 {
 #filters p {
     text-align: justify;
     font-family: Raleway;
+    font-size: 0.9em;
     color: #4d4d4d;
-    font-size: 10px;
     padding-left: 0px;
     padding-top: 10px;
     width: 200px;

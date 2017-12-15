@@ -1,10 +1,10 @@
 var config = {
-    data: "data/cash-august.json",
+    data: "data/cash-october.json",
     whoFieldName: "Organization",
     whatFieldName: "Cluster",
     whereFieldName: "DIS_CODE",
     sum: true,
-    sumField: "Individuals",
+    sumField: "Beneficiaries",
     geo: "data/Somalia_District_Polygon.json",
     joinAttribute: "DIS_CODE",
     nameAttribute: "DIST_NAME",
@@ -12,7 +12,7 @@ var config = {
     mechanismField: "Delivery mechanism",
     conditonalityField: "Conditionality",
     restrictionField: "Restriction",
-    ruralField: "Rural/Urban",
+    ruralField: "RURAL/URBAN",
     transferValue: "Individuals",
     estimatedField: "Estimated"
 };
@@ -208,7 +208,7 @@ function generate3WComponent(config, data, geom) {
         .colors(colorScale3)
         .renderTitle(true)
         .title(function (d) {
-            text = d.key + " | No. Individuals : " + formatComma(d.value);
+            text = d.key + " | No. Beneficiaries : " + formatComma(d.value);
             return capitalizeFirstLetter(text);
         });
 
@@ -220,7 +220,7 @@ function generate3WComponent(config, data, geom) {
         .group(groupRest)
         .renderTitle(true)
         .title(function (d) {
-            text = d.key + " | No. Individuals : " + formatComma(d.value);
+            text = d.key + " | No. Beneficiaries : " + formatComma(d.value);
             return capitalizeFirstLetter(text);
         });
 
@@ -234,7 +234,7 @@ function generate3WComponent(config, data, geom) {
         .colors(colorScale)
         .renderTitle(true)
         .title(function (d) {
-            text = d.key + " | No. Individuals : " + formatComma(d.value);
+            text = d.key + " | No. Beneficiaries : " + formatComma(d.value);
             return capitalizeFirstLetter(text);
         });
 
@@ -252,7 +252,7 @@ function generate3WComponent(config, data, geom) {
         })
         .renderTitle(true)
         .title(function (d) {
-            text = d.key + " | No. Individuals : " + formatComma(d.value);
+            text = d.key + " | No. Beneficiaries : " + formatComma(d.value);
             return capitalizeFirstLetter(text);
         })
         .xAxis().ticks(0);
@@ -271,18 +271,18 @@ function generate3WComponent(config, data, geom) {
         })
         .renderTitle(true)
         .title(function (d) {
-            text = d.key + " | No. Individuals : " + formatComma(d.value);
+            text = d.key + " | No. Beneficiaries : " + formatComma(d.value);
             return capitalizeFirstLetter(text);
         })
         .xAxis().ticks(0);
 
 
-    whoRegional.width(585).height(400)
+    whoRegional.width(585).height(450)
         .dimension(whoRegionalDim)
         .group(whoRegionalGroup)
         .elasticX(true)
         .data(function (group) {
-            return group.top(15);
+            return group.top(17);
         })
         .labelOffsetY(13)
         .colors([config.color])
@@ -291,7 +291,7 @@ function generate3WComponent(config, data, geom) {
         })
         .renderTitle(true)
         .title(function (d) {
-            text = d.key + " | No. Individuals : " + formatComma(d.value);
+            text = d.key + " | No. Beneficiaries : " + formatComma(d.value);
             return text; //capitalizeFirstLetter(text);
         })
         .xAxis().ticks(0);
@@ -327,7 +327,7 @@ function generate3WComponent(config, data, geom) {
         .featureKeyAccessor(function (feature) {
             return feature.properties[config.joinAttribute];
         }).popup(function (d) {
-            text = lookup[d.key] + "<br/>No. Individuals : " + formatComma(d.value);
+            text = lookup[d.key] + "<br/>No. Beneficiaries : " + formatComma(d.value);
             return text;
         })
         .renderPopup(true);
